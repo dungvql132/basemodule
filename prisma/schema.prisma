@@ -16,5 +16,15 @@ model User {
   password String
   name     String
   age      Int?
-  active   Boolean @default(false)
+  active   Boolean @default(true)
+  tokens   Token[]
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  secretKey String
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  exp       DateTime
+  active    Boolean  @default(false)
 }
