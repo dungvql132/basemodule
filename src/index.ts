@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoute from "@src/module/auth/routes";
 
 import dotenv from "dotenv";
+import { handleError } from "./base/handleError/handleError";
 dotenv.config();
 
 const app: Application = express();
@@ -19,6 +20,9 @@ app.use(bodyParser.json());
 
 // authentication
 app.use(authRoute);
+
+// handle error
+app.use(handleError);
 
 app.listen(port, async () => {
   // await connection

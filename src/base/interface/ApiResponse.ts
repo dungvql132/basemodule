@@ -1,0 +1,21 @@
+import { Response } from "express";
+
+export interface IApiResponse<T = any> {
+  statusCode: string;
+  responseStatus: number;
+  message: string;
+  data?: T | T[];
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export class ApiResponse {
+  apiResponse: IApiResponse<any>;
+  constructor(res, apiResponse: IApiResponse) {
+    this.apiResponse = apiResponse;
+  }
+
+  send(res: Response): void {
+    res.status(this.apiResponse.responseStatus).json(this.apiResponse);
+  }
+}

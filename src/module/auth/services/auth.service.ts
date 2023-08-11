@@ -7,17 +7,35 @@ import {
   IAccessTokenPayload,
   IRefreshTokenPayload,
 } from "../interface/payload";
-import { IApiResponse } from "@src/config/core/ApiResponse";
+import { IApiResponse } from "@src/base/interface/ApiResponse";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
+import { StatusCode } from "@src/base/config/statusCode";
+import { ResponseStatus } from "@src/base/config/responseStatus";
+import { ApiError } from "@src/base/interface/ApiError";
 const prisma = new PrismaClient();
 
 export async function register(createUserDto: CreateUserDto): Promise<User> {
   const { email, name, password, age } = createUserDto;
-  const passwordBcrypt = await bcrypt.hash(password, 10);
+
+  // check the exist user
+  const checkUser = await prisma.user.findFirst({
+    where: {
+      email,
+    },
+  });
+
+  if (checkUser) {
+    throw new ApiError(
+      "dupicate user",
+      ResponseStatus.DUPLICATE,
+      StatusCode.DUPLICATE
+    );
+  }
+  const hashPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.user.create({
-    data: { email, name, password: passwordBcrypt, age },
+    data: { email, name, password: hashPassword, age },
   });
   return newUser;
 }
@@ -46,7 +64,12 @@ export async function login(loginUserDto: LoginUserDto): Promise<IApiResponse> {
       email,
     };
     const isPasswordValid = bcrypt.compareSync(password, checkUser.password);
-    if (!isPasswordValid) throw new Error("wrong password");
+    if (!isPasswordValid)
+      throw new ApiError(
+        "wrong password",
+        ResponseStatus.BAD_REQUEST,
+        StatusCode.BAD_REQUEST
+      );
     accessToken = jwt.sign(accessTokenPayload, process.env.JWTSecret);
 
     const refreshTokenPayload: IRefreshTokenPayload = {
@@ -58,13 +81,18 @@ export async function login(loginUserDto: LoginUserDto): Promise<IApiResponse> {
     const result: IApiResponse = {
       accessToken,
       refreshToken,
-      code: "200",
+      statusCode: StatusCode.SUCCESS,
       message: "login success",
+      responseStatus: ResponseStatus.SUCCESS,
     };
     return result;
   }
 
-  throw new Error("cannot find user");
+  throw new ApiError(
+    "user not found",
+    ResponseStatus.NOT_FOUND,
+    StatusCode.NOT_FOUND
+  );
 }
 
 export async function renewAccessToken(
@@ -110,8 +138,9 @@ export async function renewAccessToken(
       const result: IApiResponse = {
         accessToken,
         refreshToken,
-        code: "200",
-        message: "login success",
+        statusCode: StatusCode.SUCCESS,
+        message: "renew accesstoken success",
+        responseStatus: ResponseStatus.SUCCESS,
       };
       return result;
     } else {
@@ -120,9 +149,17 @@ export async function renewAccessToken(
           id: decodedToken.id,
         },
       });
-      throw new Error("use old token");
+      throw new ApiError(
+        "use old token",
+        ResponseStatus.UNAUTHORIZED,
+        StatusCode.UNAUTHORIZED
+      );
     }
   }
 
-  throw new Error("cannot find token");
+  throw new ApiError(
+    "token not found",
+    ResponseStatus.NOT_FOUND,
+    StatusCode.NOT_FOUND
+  );
 }
