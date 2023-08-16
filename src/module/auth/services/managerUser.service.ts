@@ -1,35 +1,36 @@
+// Import necessary modules and dependencies
 import { PrismaClient, User } from "@prisma/client";
-import { CreateUserDto } from "../dto/createUser.dto";
-import { LoginUserDto } from "../dto/loginUser.dto";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import {
-  IAccessTokenPayload,
-  IRefreshTokenPayload,
-} from "../interface/payload";
-import { IApiResponse } from "@src/base/interface/ApiResponse";
-import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
-import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
 import { StatusCode } from "@src/base/config/statusCode";
 import { ResponseStatus } from "@src/base/config/responseStatus";
 import { ApiError } from "@src/base/interface/ApiError";
 import { UpdateUserDto } from "../dto/updateUser.dto";
+import {
+  convertDeletedEmailToEmail,
+  convertEmailToDeletedEmail,
+} from "../utils/formatDeletedEmail";
+
+// Create an instance of the Prisma client
 const prisma = new PrismaClient();
 
+// Function to update a user's information
 export async function updateUser(
   userId: number,
   updateUserDto: UpdateUserDto
 ): Promise<User> {
   const { email, name, password, age } = updateUserDto;
   let hashPassword;
+
+  // Hash the password if provided
   if (password) {
     hashPassword = await bcrypt.hash(password, 10);
   }
 
+  // Check if the user exists
   const checkUser = await prisma.user.findFirst({
     where: {
       id: userId,
+      active: true,
     },
   });
 
@@ -41,10 +42,11 @@ export async function updateUser(
     );
   }
 
-  // check the exist user
-  const updateUser = await prisma.user.update({
+  // Update the user's information
+  const updatedUser = await prisma.user.update({
     where: {
       id: userId,
+      active: true,
     },
     data: {
       email,
@@ -54,10 +56,51 @@ export async function updateUser(
     },
   });
 
-  return updateUser;
+  return updatedUser;
 }
 
+// Function to delete a user
 export async function deleteUser(userId: number): Promise<User> {
+  // Check if the user exists
+  const checkUser = await prisma.user.findFirst({
+    where: {
+      id: userId,
+      active: true,
+    },
+  });
+
+  if (!checkUser) {
+    throw new ApiError(
+      "cannot found user",
+      ResponseStatus.NOT_FOUND,
+      StatusCode.NOT_FOUND
+    );
+  }
+
+  // Update the user's information to mark as deleted
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId,
+      active: true,
+    },
+    data: {
+      email: convertEmailToDeletedEmail(checkUser.email, userId),
+      active: false,
+    },
+  });
+
+  // Delete associated tokens
+  const deletedTokens = await prisma.token.deleteMany({
+    where: {
+      userId: updatedUser.id,
+    },
+  });
+
+  return updatedUser;
+}
+
+export async function reactiveUser(userId: number): Promise<User> {
+  // Check if the user exists
   const checkUser = await prisma.user.findFirst({
     where: {
       id: userId,
@@ -72,22 +115,39 @@ export async function deleteUser(userId: number): Promise<User> {
     );
   }
 
-  // check the exist user
-  const updateUser = await prisma.user.update({
+  const reactiveEmail = convertDeletedEmailToEmail(checkUser.email, userId);
+
+  const checkEmailUser = await prisma.user.findFirst({
+    where: {
+      email: reactiveEmail,
+    },
+  });
+
+  if (checkEmailUser) {
+    throw new ApiError(
+      "Email has been in used",
+      ResponseStatus.DUPLICATE,
+      StatusCode.DUPLICATE
+    );
+  }
+
+  // Update the user's information to mark as deleted
+  const updatedUser = await prisma.user.update({
     where: {
       id: userId,
     },
     data: {
-      email: `isDeleted_${checkUser.email}`,
-      active: false,
+      email: reactiveEmail,
+      active: true,
     },
   });
 
-  const tokens = await prisma.token.deleteMany({
+  // Delete associated tokens
+  const deletedTokens = await prisma.token.deleteMany({
     where: {
-      userId: updateUser.id,
+      userId: updatedUser.id,
     },
   });
 
-  return updateUser;
+  return updatedUser;
 }

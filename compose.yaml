@@ -1,0 +1,29 @@
+services:
+  app:
+    image: node:18-alpine
+    command: sh -c "yarn install && npm install -g ts-node && yarn run migrate && yarn run start"
+    ports:
+      - 127.0.0.1:9999:9999
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: postgresql://dung:1@postgres:5432/basemodule?schema=public
+      PORT: 9999
+      JWTSecret: sdabdasdfhg
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: basemodule
+      POSTGRES_USER: dung
+      POSTGRES_PASSWORD: 1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    expose:
+      - 5432
+
+volumes:
+  postgres-data:

@@ -9,6 +9,7 @@ export interface IApiResponse<T = any> {
   refreshToken?: string;
 }
 
+// create Response for API
 export class ApiResponse {
   apiResponse: IApiResponse<any>;
   constructor(res, apiResponse: IApiResponse) {

@@ -1,10 +1,2 @@
-import { register, login, renewAccessToken } from "./auth.controller";
-import { updateUser, deleteUser } from "./managerUser.controller";
-
-export default {
-  register,
-  login,
-  renewAccessToken,
-  updateUser,
-  deleteUser,
-};
+export { register, login, renewAccessToken } from "./auth.controller";
+export { updateUser, deleteUser, reactiveUser } from "./managerUser.controller";

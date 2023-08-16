@@ -3,6 +3,7 @@ import { ApiResponse, IApiResponse } from "../interface/ApiResponse";
 import { ResponseStatus } from "../config/responseStatus";
 import { StatusCode } from "../config/statusCode";
 import { ApiError } from "../interface/ApiError";
+import environment from "@src/base/config/env";
 
 export function handleError(
   err: any,
@@ -13,7 +14,7 @@ export function handleError(
   if (err instanceof ApiError) {
     err.send(res);
   } else {
-    if (process.env.NODE_ENV === "development") {
+    if (environment.NODE_ENV === "development") {
       return res.status(500).send(err);
     }
 
