@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsEmail } from "class-validator";
 
-export class CreateUserDto {
+export class RegisterDto {
   @Type(() => String)
   password: string;
 

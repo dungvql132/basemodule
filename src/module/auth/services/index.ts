@@ -1,2 +1,8 @@
-export { register, login, renewAccessToken } from "./auth.service";
-export { updateUser, deleteUser, reactiveUser } from "./managerUser.service";
+export {
+  register,
+  login,
+  renewAccessToken,
+  checkUserLogin,
+  logout,
+  logoutAll,
+} from "./auth.service";

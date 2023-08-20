@@ -1,16 +1,14 @@
 import "reflect-metadata";
-import express, { type Application } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import environment from "@src/base/config/env";
 import authRoute from "@src/module/auth/routes";
-
-import dotenv from "dotenv";
+import userManagerRoute from "@src/module/userManager/routes";
+import express, { type Application } from "express";
 import { handleError } from "./base/handleError/handleError";
-dotenv.config();
 
 const app: Application = express();
-const port = process.env.PORT || 1302;
+const port = environment.PORT;
 
 app.use(cors());
 
@@ -20,6 +18,7 @@ app.use(bodyParser.json());
 
 // authentication
 app.use(authRoute);
+app.use(userManagerRoute);
 
 // handle error
 app.use(handleError);

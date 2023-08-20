@@ -13,7 +13,6 @@ export function convertDeletedEmailToEmail(
 
   // Sử dụng match() để kiểm tra và trích xuất id và địa chỉ email từ chuỗi
   const matchResult = deletedEmail.match(regexPattern);
-  console.log("matchResult: ", matchResult);
 
   if (matchResult && matchResult.length === 3) {
     const idMatch = matchResult[1];

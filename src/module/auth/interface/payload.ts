@@ -1,9 +1,5 @@
-export interface IRefreshTokenPayload {
+export interface ITokenPayload {
   email: string;
-  id: number;
+  tokenId: number;
   secretKey: string;
-}
-
-export interface IAccessTokenPayload {
-  email: string;
 }

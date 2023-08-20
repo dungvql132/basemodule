@@ -5,6 +5,7 @@ export interface IStatusCode {
   BAD_REQUEST_INVALID_FORMAT: string;
   UNAUTHORIZED: string;
   FORBIDDEN: string;
+  FORBIDDEN_TOKEN_EXPIRED: string;
   NOT_FOUND: string;
   DUPLICATE: string;
   INTERNAL_SERVER_ERROR: string;
@@ -20,6 +21,7 @@ export const StatusCode: IStatusCode = {
   UNAUTHORIZED: "401000",
   // Forbidden
   FORBIDDEN: "403000",
+  FORBIDDEN_TOKEN_EXPIRED: "403001",
   // Not Found
   NOT_FOUND: "404000",
   // DUPLICATE

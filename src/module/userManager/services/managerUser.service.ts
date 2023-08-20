@@ -9,6 +9,7 @@ import {
   convertDeletedEmailToEmail,
   convertEmailToDeletedEmail,
 } from "../utils/formatDeletedEmail";
+import { logoutAll } from "@src/module/auth/services/auth.service";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();
@@ -90,11 +91,7 @@ export async function deleteUser(userId: number): Promise<User> {
   });
 
   // Delete associated tokens
-  const deletedTokens = await prisma.token.deleteMany({
-    where: {
-      userId: updatedUser.id,
-    },
-  });
+  await logoutAll(updatedUser.id);
 
   return updatedUser;
 }
@@ -104,6 +101,7 @@ export async function reactiveUser(userId: number): Promise<User> {
   const checkUser = await prisma.user.findFirst({
     where: {
       id: userId,
+      active: false,
     },
   });
 
@@ -139,13 +137,6 @@ export async function reactiveUser(userId: number): Promise<User> {
     data: {
       email: reactiveEmail,
       active: true,
-    },
-  });
-
-  // Delete associated tokens
-  const deletedTokens = await prisma.token.deleteMany({
-    where: {
-      userId: updatedUser.id,
     },
   });
 
