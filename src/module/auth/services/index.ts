@@ -1,10 +1,8 @@
-import { register, login, renewAccessToken } from "./auth.service";
-import { updateUser, deleteUser } from "./managerUser.service";
-
-export default {
+export {
   register,
   login,
   renewAccessToken,
-  updateUser,
-  deleteUser,
-};
+  checkUserLogin,
+  logout,
+  logoutAll,
+} from "./auth.service";

@@ -1,5 +1,6 @@
 import { Response } from "express";
 
+// create Error for API
 export class ApiError extends Error {
   message: string;
   statusCode: string;

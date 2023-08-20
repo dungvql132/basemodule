@@ -114,5 +114,6 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
-  ]
+  ],
+  "files": ["src/base/types/index.d.ts"]
 }
