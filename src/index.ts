@@ -4,6 +4,7 @@ import cors from "cors";
 import environment from "@src/base/config/env";
 import authRoute from "@src/module/auth/routes";
 import userManagerRoute from "@src/module/userManager/routes";
+import learnEnglishRoute from "@src/module/learnEnglish/routes";
 import express, { type Application } from "express";
 import { handleError } from "./base/handleError/handleError";
 
@@ -19,6 +20,9 @@ app.use(bodyParser.json());
 // authentication
 app.use(authRoute);
 app.use(userManagerRoute);
+
+// learning english
+app.use("/api", learnEnglishRoute);
 
 // handle error
 app.use(handleError);

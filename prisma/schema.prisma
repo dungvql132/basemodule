@@ -11,13 +11,15 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String
-  age      Int?
-  active   Boolean @default(true)
-  tokens   Token[]
+  id        Int             @id @default(autoincrement())
+  email     String          @unique
+  password  String
+  name      String
+  age       Int?
+  active    Boolean         @default(true)
+  tokens    Token[]
+  words     Word[]
+  viewWords UserViewWords[]
 }
 
 model Token {
@@ -27,4 +29,45 @@ model Token {
   user      User?    @relation(fields: [userId], references: [id])
   exp       DateTime
   active    Boolean  @default(false)
+}
+
+model Word {
+  id          Int             @id @default(autoincrement())
+  text        String
+  wordDetails WordDetail[]
+  authorId    User?           @relation(fields: [userId], references: [id])
+  userId      Int?
+  viewUsers   UserViewWords[]
+}
+
+model UserViewWords {
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  word   Word @relation(fields: [wordId], references: [id])
+  wordId Int
+
+  @@id([userId, wordId])
+}
+
+model WordDetail {
+  id           Int           @id @default(autoincrement())
+  meaning      String
+  word         Word?         @relation(fields: [wordId], references: [id])
+  wordId       Int?
+  wordExamples WordExample[]
+  wordType     WordType?     @relation(fields: [wordTypeId], references: [id])
+  wordTypeId   Int?
+}
+
+model WordExample {
+  id           Int        @id @default(autoincrement())
+  example      String
+  wordDetailId Int
+  wordDetails  WordDetail @relation(fields: [wordDetailId], references: [id])
+}
+
+model WordType {
+  id          Int          @id @default(autoincrement())
+  type        String
+  wordDetails WordDetail[]
 }
