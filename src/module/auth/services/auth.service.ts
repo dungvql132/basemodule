@@ -1,19 +1,19 @@
 // Import necessary modules and dependencies
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import moment from "moment";
+import environment from "@src/base/config/env";
+import loggers from "@src/module/logs";
 import { PrismaClient, User } from "@prisma/client";
 import { RegisterDto } from "../dto/Register.dto";
 import { LoginDto } from "../dto/Login.dto";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { ITokenPayload } from "../interface/payload";
 import { IApiResponse } from "@src/base/interface/ApiResponse";
 import { v4 as uuidv4 } from "uuid";
-import moment from "moment";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
 import { StatusCode } from "@src/base/config/statusCode";
 import { ResponseStatus } from "@src/base/config/responseStatus";
 import { ApiError } from "@src/base/interface/ApiError";
-import environment from "@src/base/config/env";
-import loggers from "@src/module/logs";
 import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
 import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
@@ -133,6 +133,7 @@ export async function renewAccessToken(
   renewAccessTokenDto: RenewAccessTokenDto
 ): Promise<IApiResponse> {
   const { refreshToken } = renewAccessTokenDto;
+  console.log(refreshToken);
 
   // Verify the refresh token and handle renewal
   const verifyRefreshToken = await verifyToken(refreshToken);

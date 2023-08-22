@@ -1,21 +1,23 @@
 services:
   app:
     image: node:18-alpine
-    command: sh -c "yarn install && npm install -g ts-node && yarn run migrate && yarn run start"
+    command: sh -c "yarn install && npm install -g ts-node && yarn run migrate && yarn run dev"
     ports:
       - 127.0.0.1:9999:9999
     working_dir: /app
     volumes:
       - ./:/app
     environment:
-      DATABASE_URL: postgresql://dung:1@postgres:5432/basemodule?schema=public
+      DATABASE_URL: postgresql://dung:1@postgres:5432/test?schema=public
       PORT: 9999
       JWTSecret: sdabdasdfhg
+      REFRESHTOKEN_EXP: 2592000
+      ACCESSTOKEN_EXP: 86400
 
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: basemodule
+      POSTGRES_DB: test
       POSTGRES_USER: dung
       POSTGRES_PASSWORD: 1
     ports:
