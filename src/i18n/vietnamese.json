@@ -1,0 +1,10 @@
+{
+    "hello":"xin chào",
+    "Missing token":"Thiếu mã thông báo",
+    "Token expired":"Mã thông báo hết hạn",
+    "Not found": "Không tìm thấy",
+    "Duplicate": "Bị trùng",
+    "Wrong password":"Sai mật khẩu",
+    "Use old token":"Mã thông báo cũ",
+    "Token not match":"Mã thông báo không khớp"
+}

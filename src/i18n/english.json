@@ -1,0 +1,10 @@
+{
+    "hello":"hello",
+    "Missing token":"Missing token",
+    "Token expired":"Token expired",
+    "Not found": "Not found",
+    "Duplicate": "Duplicate",
+    "Wrong password":"Wrong password",
+    "Use old token":"Use old token",
+    "Token not match":"Token not match"
+}

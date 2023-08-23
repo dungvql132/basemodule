@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { PrismaClient, User } from "@prisma/client";
 import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
 import { ResponseStatus } from "@src/base/config/ResponseStatus";
-import { ApiError } from "@src/base/interface/ApiError";
+import { ApiError, ApiNotFoundError } from "@src/base/interface/ApiError";
 import { UpdateUserDto } from "../dto/updateUser.dto";
 import {
   convertDeletedEmailToEmail,
@@ -36,11 +36,7 @@ export async function updateUser(
   });
 
   if (!checkUser) {
-    throw new ApiError(
-      "cannot found user",
-      ResponseStatus.NOT_FOUND,
-      ErrorResponseStatusCode.NOT_FOUND
-    );
+    throw new ApiNotFoundError("User");
   }
 
   // Update the user's information
@@ -71,11 +67,7 @@ export async function deleteUser(userId: number): Promise<User> {
   });
 
   if (!checkUser) {
-    throw new ApiError(
-      "cannot found user",
-      ResponseStatus.NOT_FOUND,
-      ErrorResponseStatusCode.NOT_FOUND
-    );
+    throw new ApiNotFoundError("User");
   }
 
   // Update the user's information to mark as deleted
@@ -106,11 +98,7 @@ export async function reactiveUser(userId: number): Promise<User> {
   });
 
   if (!checkUser) {
-    throw new ApiError(
-      "cannot found user",
-      ResponseStatus.NOT_FOUND,
-      ErrorResponseStatusCode.NOT_FOUND
-    );
+    throw new ApiNotFoundError("User");
   }
 
   const reactiveEmail = convertDeletedEmailToEmail(checkUser.email, userId);

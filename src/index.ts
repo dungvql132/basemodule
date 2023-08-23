@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "@src/base/config/i18n";
 import bodyParser from "body-parser";
 import cors from "cors";
 import environment from "@src/base/config/env";

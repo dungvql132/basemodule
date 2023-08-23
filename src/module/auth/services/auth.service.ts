@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 import environment from "@src/base/config/env";
 import loggers from "@src/module/logs";
+import i18n from "i18next";
 import { PrismaClient, User } from "@prisma/client";
 import { RegisterDto } from "../dto/Register.dto";
 import { LoginDto } from "../dto/Login.dto";
@@ -13,10 +14,17 @@ import { v4 as uuidv4 } from "uuid";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
 import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
 import { ResponseStatus } from "@src/base/config/ResponseStatus";
-import { ApiError } from "@src/base/interface/ApiError";
+import {
+  ApiBadRequestError,
+  ApiDuplicateError,
+  ApiForbiddenError,
+  ApiNotFoundError,
+  ApiUnauthorizedError,
+} from "@src/base/interface/ApiError";
 import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
 import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
+import { ErrorMessage } from "@src/base/message";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();
@@ -33,11 +41,7 @@ export async function register(RegisterDto: RegisterDto): Promise<User> {
   });
 
   if (checkUser) {
-    throw new ApiError(
-      "duplicate user",
-      ResponseStatus.DUPLICATE,
-      ErrorResponseStatusCode.DUPLICATE
-    );
+    throw new ApiDuplicateError("User");
   }
 
   // Hash the password and create a new user
@@ -85,11 +89,7 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
     const isPasswordValid = bcrypt.compareSync(password, checkUser.password);
 
     if (!isPasswordValid) {
-      throw new ApiError(
-        "wrong password",
-        ResponseStatus.BAD_REQUEST,
-        ErrorResponseStatusCode.BAD_REQUEST
-      );
+      throw new ApiBadRequestError(i18n.t(ErrorMessage.WRONG_PASSWORD));
     }
 
     // create access token
@@ -120,11 +120,7 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
   }
 
   // Handle error if user is not found
-  throw new ApiError(
-    "user not found",
-    ResponseStatus.NOT_FOUND,
-    ErrorResponseStatusCode.NOT_FOUND
-  );
+  throw new ApiNotFoundError("User");
 }
 
 // Function to renew access token
@@ -192,20 +188,12 @@ export async function renewAccessToken(
         },
       });
 
-      throw new ApiError(
-        "use old token",
-        ResponseStatus.UNAUTHORIZED,
-        ErrorResponseStatusCode.UNAUTHORIZED
-      );
+      throw new ApiForbiddenError(i18n.t(ErrorMessage.USE_OLD_TOKEN));
     }
   }
 
   // Handle error if token is not found
-  throw new ApiError(
-    "token not found",
-    ResponseStatus.NOT_FOUND,
-    ErrorResponseStatusCode.NOT_FOUND
-  );
+  throw new ApiNotFoundError("Token");
 }
 
 export async function checkUserLogin(
@@ -244,11 +232,7 @@ export async function checkUserLogin(
   if (message !== "") throw new Error(message);
 
   // Handle error if token is not found
-  throw new ApiError(
-    "Token not found",
-    ResponseStatus.NOT_FOUND,
-    ErrorResponseStatusCode.NOT_FOUND
-  );
+  throw new ApiNotFoundError("Token");
 }
 
 export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
@@ -267,11 +251,7 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
       if (token) {
         // if matched Token, logout from this divice
         if (!isMatchedToken)
-          throw new ApiError(
-            "UNAUTHORIZED",
-            ResponseStatus.UNAUTHORIZED,
-            ErrorResponseStatusCode.UNAUTHORIZED
-          );
+          throw new ApiUnauthorizedError(i18n.t(ErrorMessage.TOKEN_NOT_MATCH));
 
         const deletedTokens = await prisma.token.deleteMany({
           where: {
@@ -295,11 +275,7 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
   if (message !== "") throw new Error(message);
 
   // Handle error if token is not found
-  throw new ApiError(
-    "Token not found",
-    ResponseStatus.NOT_FOUND,
-    ErrorResponseStatusCode.NOT_FOUND
-  );
+  throw new ApiNotFoundError("Token");
 }
 
 // logout user from all devices

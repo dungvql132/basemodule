@@ -1,8 +1,10 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { verifyToken, verifyTokenUser } from "../module/auth/utils/verifyToken";
-import { ApiError } from "@src/base/interface/ApiError";
-import { ResponseStatus } from "@src/base/config/ResponseStatus";
-import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
+import { verifyTokenUser } from "../module/auth/utils/verifyToken";
+import {
+  ApiMissingTokenError,
+  ApiTokenExpiredError,
+  ApiUnauthorizedError,
+} from "@src/base/interface/ApiError";
 
 export async function authenticationMiddleware(
   req: Request,
@@ -14,13 +16,7 @@ export async function authenticationMiddleware(
     : req.headers.authorization?.split(" ")[0]; // Get token from Header Authorization
 
   if (!token) {
-    return next(
-      new ApiError(
-        "Missing token",
-        ResponseStatus.UNAUTHORIZED,
-        ErrorResponseStatusCode.UNAUTHORIZED
-      )
-    );
+    return next(new ApiMissingTokenError());
   }
 
   try {
@@ -33,20 +29,8 @@ export async function authenticationMiddleware(
   } catch (error) {
     const err = error as Error;
     if (err.message === "jwt expired") {
-      return next(
-        new ApiError(
-          "jwt expired",
-          ResponseStatus.FORBIDDEN,
-          ErrorResponseStatusCode.FORBIDDEN
-        )
-      );
+      return next(new ApiTokenExpiredError());
     }
-    return next(
-      new ApiError(
-        err.message,
-        ResponseStatus.UNAUTHORIZED,
-        ErrorResponseStatusCode.UNAUTHORIZED
-      )
-    );
+    return next(new ApiUnauthorizedError(err.message));
   }
 }
