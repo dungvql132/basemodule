@@ -24,7 +24,7 @@ import {
 import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
 import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
-import { ErrorMessage } from "@src/base/message";
+import { ErrorMessage, SuccessMessage } from "@src/base/message";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();
@@ -112,7 +112,7 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
     const result: IApiResponse = {
       accessToken,
       refreshToken,
-      message: "login success",
+      message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
       responseStatus: ResponseStatus.SUCCESS,
     };
 
@@ -175,7 +175,7 @@ export async function renewAccessToken(
       const result: IApiResponse = {
         accessToken,
         refreshToken,
-        message: "renew access token success",
+        message: i18n.t(SuccessMessage.RENEW_ACCESS_TOKEN_SUCCESS),
         responseStatus: ResponseStatus.SUCCESS,
       };
 
@@ -206,8 +206,6 @@ export async function checkUserLogin(
   for (let index = 0; index < tokens.length; index++) {
     if (!tokens[index]) continue;
 
-    console.log("token: ", tokens[index]);
-
     // verify token
     try {
       const verifyAccessToken = await verifyTokenUser(tokens[index]);
@@ -216,7 +214,7 @@ export async function checkUserLogin(
       // has user and matched token
       if (user && isMatchedToken) {
         const result: IApiResponse = {
-          message: "User is login",
+          message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
           responseStatus: ResponseStatus.SUCCESS,
           data: user,
         };
@@ -260,7 +258,7 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
         });
 
         const result: IApiResponse = {
-          message: "logout success",
+          message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
           responseStatus: ResponseStatus.SUCCESS,
         };
         return result;
@@ -286,7 +284,7 @@ export async function logoutAll(userId: number): Promise<IApiResponse> {
     },
   });
   const result: IApiResponse = {
-    message: "logout all devices success",
+    message: i18n.t(SuccessMessage.LOGOUT_ALL_DEVICES_SUCCESS),
     responseStatus: ResponseStatus.SUCCESS,
   };
   return result;
