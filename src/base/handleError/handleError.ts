@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiResponse, IApiResponse } from "../interface/ApiResponse";
-import { ResponseStatus } from "../config/responseStatus";
-import { StatusCode } from "../config/statusCode";
-import { ApiError } from "../interface/ApiError";
+import { ResponseStatus } from "../config/ResponseStatus";
+import { ErrorResponseStatusCode } from "../config/ErrorResponseStatusCode";
+import { ApiError, ApiInternalServerErrorError } from "../interface/ApiError";
 import environment from "@src/base/config/env";
 
 export function handleError(
@@ -18,12 +18,8 @@ export function handleError(
       return res.status(500).send(err);
     }
 
-    const apiReponse: IApiResponse = {
-      message: err.message,
-      responseStatus: ResponseStatus.INTERNAL_ERROR,
-      statusCode: StatusCode.INTERNAL_SERVER_ERROR,
-    };
+    const apiError = new ApiInternalServerErrorError(err.message);
 
-    res.status(ResponseStatus.INTERNAL_ERROR).json(apiReponse);
+    apiError.send(res);
   }
 }

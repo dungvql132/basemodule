@@ -1,5 +1,5 @@
-import express, { type Application } from "express";
 import * as authController from "../controllers";
+import express, { type Application } from "express";
 
 const app: Application = express();
 

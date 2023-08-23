@@ -1,10 +1,8 @@
-import { PrismaClient, Token, User } from "@prisma/client";
-import { ITokenPayload } from "../interface/payload";
 import environment from "@src/base/config/env";
 import jwt from "jsonwebtoken";
-import { ApiError } from "@src/base/interface/ApiError";
-import { ResponseStatus } from "@src/base/config/responseStatus";
-import { StatusCode } from "@src/base/config/statusCode";
+import { PrismaClient, Token, User } from "@prisma/client";
+import { ITokenPayload } from "../interface/payload";
+import { ApiNotFoundError } from "@src/base/interface/ApiError";
 const prisma = new PrismaClient();
 
 export async function verifyToken(token: string | null | undefined): Promise<{
@@ -23,12 +21,7 @@ export async function verifyToken(token: string | null | undefined): Promise<{
     },
   });
 
-  if (!tokenFound)
-    throw new ApiError(
-      "Token not found",
-      ResponseStatus.NOT_FOUND,
-      StatusCode.NOT_FOUND
-    );
+  if (!tokenFound) throw new ApiNotFoundError();
 
   let isMatchedToken = false;
   if (tokenFound && tokenFound.secretKey === decodedToken.secretKey) {
@@ -63,12 +56,7 @@ export async function verifyTokenUser(
     },
   });
 
-  if (!user)
-    throw new ApiError(
-      "User not found",
-      ResponseStatus.NOT_FOUND,
-      StatusCode.NOT_FOUND
-    );
+  if (!user) throw new ApiNotFoundError("User");
 
   return {
     isMatchedToken,

@@ -1,0 +1,15 @@
+{
+    "hello":"xin chào",
+    "Missing token":"Thiếu mã thông báo",
+    "Token expired":"Mã thông báo hết hạn",
+    "Not found": "Không tìm thấy",
+    "Duplicate": "Bị trùng",
+    "Wrong password":"Sai mật khẩu",
+    "Use old token":"Mã thông báo cũ",
+    "Token not match":"Mã thông báo không khớp",
+
+    "Login success":"Đăng nhập thành công",
+    "Logout all devices success":"Đăng xuất khỏi tất cả các thiết bị thành công",
+    "Logout success":"Đăng xuất thành công",
+    "Renew access token success":"Tạo mới Mã thông báo thành công"
+}

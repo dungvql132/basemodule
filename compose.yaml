@@ -1,7 +1,7 @@
 services:
   app:
     image: node:18-alpine
-    command: sh -c "yarn install && npm install -g ts-node && yarn run migrate && yarn run dev"
+    command: sh -c "npm install && npm install -g ts-node && npm run migrate:docker && npm run dev"
     ports:
       - 127.0.0.1:9999:9999
     working_dir: /app
