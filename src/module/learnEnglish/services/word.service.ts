@@ -2,9 +2,7 @@ import { PrismaClient, User, Word } from "@prisma/client";
 import { CreateWordDto } from "../dto/CreateWord.dto";
 import { generateCreateWordData, generateUpdateWordData } from "../utils";
 import { UpdateWordDto } from "../dto/UpdateWord.dto";
-import { ApiError } from "@src/base/interface/ApiError";
-import { ResponseStatus } from "@src/base/config/responseStatus";
-import { StatusCode } from "@src/base/config/statusCode";
+import { ApiError, ApiNotFoundError } from "@src/base/interface/ApiError";
 
 const prisma = new PrismaClient();
 
@@ -43,12 +41,7 @@ export async function getWordById(wordId: number): Promise<Word> {
     include: { wordDetails: { include: { wordExamples: true } } },
   });
 
-  if (!word)
-    throw new ApiError(
-      "Word cannot found",
-      ResponseStatus.NOT_FOUND,
-      StatusCode.NOT_FOUND
-    );
+  if (!word) throw new ApiNotFoundError("Word");
 
   return word;
 }
