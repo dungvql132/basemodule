@@ -6,7 +6,8 @@ import environment from "@src/base/config/env";
 import authRoute from "@src/module/auth/routes";
 import userManagerRoute from "@src/module/userManager/routes";
 import express, { type Application } from "express";
-import { handleError } from "./base/handleError/handleError";
+import { handleError } from "@src/base/handleError/handleError";
+import { changeLanguageMiddleware } from "@src/middlewares/changeLanguage";
 
 const app: Application = express();
 const port = environment.PORT;
@@ -16,6 +17,9 @@ app.use(cors());
 // Configuring body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// language
+app.use(changeLanguageMiddleware);
 
 // authentication
 app.use(authRoute);

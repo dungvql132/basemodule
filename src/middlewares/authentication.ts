@@ -5,8 +5,9 @@ import {
   ApiTokenExpiredError,
   ApiUnauthorizedError,
 } from "@src/base/interface/ApiError";
+import { asyncHandler } from "@src/base/utils";
 
-export async function authenticationMiddleware(
+export const authenticationMiddleware = asyncHandler(async function (
   req: Request,
   res: Response,
   next: NextFunction
@@ -16,7 +17,7 @@ export async function authenticationMiddleware(
     : req.headers.authorization?.split(" ")[0]; // Get token from Header Authorization
 
   if (!token) {
-    return next(new ApiMissingTokenError());
+    throw new ApiMissingTokenError();
   }
 
   try {
@@ -29,8 +30,8 @@ export async function authenticationMiddleware(
   } catch (error) {
     const err = error as Error;
     if (err.message === "jwt expired") {
-      return next(new ApiTokenExpiredError());
+      throw new ApiTokenExpiredError();
     }
-    return next(new ApiUnauthorizedError(err.message));
+    throw new ApiUnauthorizedError(err.message);
   }
-}
+});
