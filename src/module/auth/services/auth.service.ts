@@ -11,8 +11,8 @@ import { ITokenPayload } from "../interface/payload";
 import { IApiResponse } from "@src/base/interface/ApiResponse";
 import { v4 as uuidv4 } from "uuid";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
-import { StatusCode } from "@src/base/config/statusCode";
-import { ResponseStatus } from "@src/base/config/responseStatus";
+import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
+import { ResponseStatus } from "@src/base/config/ResponseStatus";
 import { ApiError } from "@src/base/interface/ApiError";
 import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
@@ -36,7 +36,7 @@ export async function register(RegisterDto: RegisterDto): Promise<User> {
     throw new ApiError(
       "duplicate user",
       ResponseStatus.DUPLICATE,
-      StatusCode.DUPLICATE
+      ErrorResponseStatusCode.DUPLICATE
     );
   }
 
@@ -88,7 +88,7 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
       throw new ApiError(
         "wrong password",
         ResponseStatus.BAD_REQUEST,
-        StatusCode.BAD_REQUEST
+        ErrorResponseStatusCode.BAD_REQUEST
       );
     }
 
@@ -112,7 +112,6 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
     const result: IApiResponse = {
       accessToken,
       refreshToken,
-      statusCode: StatusCode.SUCCESS,
       message: "login success",
       responseStatus: ResponseStatus.SUCCESS,
     };
@@ -124,7 +123,7 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
   throw new ApiError(
     "user not found",
     ResponseStatus.NOT_FOUND,
-    StatusCode.NOT_FOUND
+    ErrorResponseStatusCode.NOT_FOUND
   );
 }
 
@@ -180,7 +179,6 @@ export async function renewAccessToken(
       const result: IApiResponse = {
         accessToken,
         refreshToken,
-        statusCode: StatusCode.SUCCESS,
         message: "renew access token success",
         responseStatus: ResponseStatus.SUCCESS,
       };
@@ -197,7 +195,7 @@ export async function renewAccessToken(
       throw new ApiError(
         "use old token",
         ResponseStatus.UNAUTHORIZED,
-        StatusCode.UNAUTHORIZED
+        ErrorResponseStatusCode.UNAUTHORIZED
       );
     }
   }
@@ -206,7 +204,7 @@ export async function renewAccessToken(
   throw new ApiError(
     "token not found",
     ResponseStatus.NOT_FOUND,
-    StatusCode.NOT_FOUND
+    ErrorResponseStatusCode.NOT_FOUND
   );
 }
 
@@ -230,7 +228,6 @@ export async function checkUserLogin(
       // has user and matched token
       if (user && isMatchedToken) {
         const result: IApiResponse = {
-          statusCode: StatusCode.SUCCESS,
           message: "User is login",
           responseStatus: ResponseStatus.SUCCESS,
           data: user,
@@ -250,7 +247,7 @@ export async function checkUserLogin(
   throw new ApiError(
     "Token not found",
     ResponseStatus.NOT_FOUND,
-    StatusCode.NOT_FOUND
+    ErrorResponseStatusCode.NOT_FOUND
   );
 }
 
@@ -273,7 +270,7 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
           throw new ApiError(
             "UNAUTHORIZED",
             ResponseStatus.UNAUTHORIZED,
-            StatusCode.UNAUTHORIZED
+            ErrorResponseStatusCode.UNAUTHORIZED
           );
 
         const deletedTokens = await prisma.token.deleteMany({
@@ -283,7 +280,6 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
         });
 
         const result: IApiResponse = {
-          statusCode: StatusCode.SUCCESS,
           message: "logout success",
           responseStatus: ResponseStatus.SUCCESS,
         };
@@ -302,7 +298,7 @@ export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
   throw new ApiError(
     "Token not found",
     ResponseStatus.NOT_FOUND,
-    StatusCode.NOT_FOUND
+    ErrorResponseStatusCode.NOT_FOUND
   );
 }
 
@@ -314,7 +310,6 @@ export async function logoutAll(userId: number): Promise<IApiResponse> {
     },
   });
   const result: IApiResponse = {
-    statusCode: StatusCode.SUCCESS,
     message: "logout all devices success",
     responseStatus: ResponseStatus.SUCCESS,
   };

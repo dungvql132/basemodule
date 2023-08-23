@@ -1,6 +1,6 @@
+import * as authService from "../services"; // Assuming authService is properly imported.
 import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
-import * as authService from "../services"; // Assuming authService is properly imported.
 import { asyncHandler } from "@src/base/utils"; // Assuming asyncHandler is properly imported.
 import { UpdateUserDto } from "../dto/updateUser.dto";
 

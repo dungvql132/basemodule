@@ -1,10 +1,10 @@
-import { PrismaClient, Token, User } from "@prisma/client";
-import { ITokenPayload } from "../interface/payload";
 import environment from "@src/base/config/env";
 import jwt from "jsonwebtoken";
+import { PrismaClient, Token, User } from "@prisma/client";
+import { ITokenPayload } from "../interface/payload";
 import { ApiError } from "@src/base/interface/ApiError";
-import { ResponseStatus } from "@src/base/config/responseStatus";
-import { StatusCode } from "@src/base/config/statusCode";
+import { ResponseStatus } from "@src/base/config/ResponseStatus";
+import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
 const prisma = new PrismaClient();
 
 export async function verifyToken(token: string | null | undefined): Promise<{
@@ -27,7 +27,7 @@ export async function verifyToken(token: string | null | undefined): Promise<{
     throw new ApiError(
       "Token not found",
       ResponseStatus.NOT_FOUND,
-      StatusCode.NOT_FOUND
+      ErrorResponseStatusCode.NOT_FOUND
     );
 
   let isMatchedToken = false;
@@ -67,7 +67,7 @@ export async function verifyTokenUser(
     throw new ApiError(
       "User not found",
       ResponseStatus.NOT_FOUND,
-      StatusCode.NOT_FOUND
+      ErrorResponseStatusCode.NOT_FOUND
     );
 
   return {

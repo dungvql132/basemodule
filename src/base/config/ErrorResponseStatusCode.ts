@@ -1,5 +1,4 @@
-export interface IStatusCode {
-  SUCCESS: string;
+export interface IErrorResponseStatusCode {
   BAD_REQUEST: string;
   BAD_REQUEST_REQUIRED: string;
   BAD_REQUEST_INVALID_FORMAT: string;
@@ -11,8 +10,7 @@ export interface IStatusCode {
   INTERNAL_SERVER_ERROR: string;
 }
 
-export const StatusCode: IStatusCode = {
-  SUCCESS: "200000",
+export const ErrorResponseStatusCode: IErrorResponseStatusCode = {
   // Bad Request
   BAD_REQUEST: "400000",
   BAD_REQUEST_REQUIRED: "400001",

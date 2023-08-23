@@ -1,8 +1,8 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
+import { verifyToken, verifyTokenUser } from "../module/auth/utils/verifyToken";
 import { ApiError } from "@src/base/interface/ApiError";
-import { ResponseStatus } from "@src/base/config/responseStatus";
-import { StatusCode } from "@src/base/config/statusCode";
+import { ResponseStatus } from "@src/base/config/ResponseStatus";
+import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
 
 export async function authenticationMiddleware(
   req: Request,
@@ -18,7 +18,7 @@ export async function authenticationMiddleware(
       new ApiError(
         "Missing token",
         ResponseStatus.UNAUTHORIZED,
-        StatusCode.UNAUTHORIZED
+        ErrorResponseStatusCode.UNAUTHORIZED
       )
     );
   }
@@ -37,7 +37,7 @@ export async function authenticationMiddleware(
         new ApiError(
           "jwt expired",
           ResponseStatus.FORBIDDEN,
-          StatusCode.FORBIDDEN
+          ErrorResponseStatusCode.FORBIDDEN
         )
       );
     }
@@ -45,7 +45,7 @@ export async function authenticationMiddleware(
       new ApiError(
         err.message,
         ResponseStatus.UNAUTHORIZED,
-        StatusCode.UNAUTHORIZED
+        ErrorResponseStatusCode.UNAUTHORIZED
       )
     );
   }

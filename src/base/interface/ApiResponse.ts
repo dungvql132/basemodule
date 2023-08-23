@@ -1,7 +1,6 @@
 import { Response } from "express";
 
 export interface IApiResponse<T = any> {
-  statusCode: string;
   responseStatus: number;
   message: string;
   data?: T | T[];

@@ -1,6 +1,6 @@
-import express, { type Application } from "express";
 import * as authController from "../controllers";
-import { authenticationMiddleware } from "@src/module/auth/middlewares/authentication";
+import express, { type Application } from "express";
+import { authenticationMiddleware } from "@src/middlewares/authentication";
 
 const app: Application = express();
 

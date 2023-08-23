@@ -1,8 +1,8 @@
+import * as authService from "../services"; // Assuming authService is properly imported.
 import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import { RegisterDto } from "../dto/Register.dto";
 import { validate } from "class-validator";
-import * as authService from "../services"; // Assuming authService is properly imported.
 import { LoginDto } from "../dto/Login.dto";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
 import { asyncHandler } from "@src/base/utils"; // Assuming asyncHandler is properly imported.
@@ -36,9 +36,9 @@ export const login = asyncHandler(async function (
     return;
   }
 
-  const apiReponse = await authService.login(loginDto); // Call the authService to perform login
+  const apiResponse = await authService.login(loginDto); // Call the authService to perform login
 
-  res.status(200).json({ ...apiReponse });
+  res.status(200).json({ ...apiResponse });
 });
 
 // Controller function to renew access token
@@ -56,9 +56,9 @@ export const renewAccessToken = asyncHandler(async function (
     return;
   }
 
-  const apiReponse = await authService.renewAccessToken(renewAccessTokenDto); // Call the authService to renew access token
+  const apiResponse = await authService.renewAccessToken(renewAccessTokenDto); // Call the authService to renew access token
 
-  res.status(200).json({ ...apiReponse });
+  res.status(200).json({ ...apiResponse });
 });
 
 export const checkUserLogin = asyncHandler(async function (
@@ -75,9 +75,9 @@ export const checkUserLogin = asyncHandler(async function (
     return;
   }
 
-  const apiReponse = await authService.checkUserLogin(checkUserLoginDto); // Call the authService to renew access token
+  const apiResponse = await authService.checkUserLogin(checkUserLoginDto); // Call the authService to renew access token
 
-  res.status(200).json({ ...apiReponse });
+  res.status(200).json({ ...apiResponse });
 });
 
 export const logout = asyncHandler(async function (
@@ -94,7 +94,7 @@ export const logout = asyncHandler(async function (
     return;
   }
 
-  const apiReponse = await authService.logout(logoutDto); // Call the authService to renew access token
+  const apiResponse = await authService.logout(logoutDto); // Call the authService to renew access token
 
-  res.status(200).json({ ...apiReponse });
+  res.status(200).json({ ...apiResponse });
 });
