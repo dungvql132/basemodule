@@ -67,3 +67,15 @@ export async function updateWordById(
 
   return word;
 }
+
+export async function deleteWordById(wordId: number): Promise<Word> {
+  const word = await getWordById(wordId);
+  if (!word) throw new ApiNotFoundError("Word");
+  await prisma.word.delete({
+    where: {
+      id: wordId,
+    },
+  });
+
+  return word;
+}

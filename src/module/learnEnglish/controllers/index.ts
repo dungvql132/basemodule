@@ -3,4 +3,5 @@ export {
   getAllWord,
   getWordById,
   updateWordById,
+  deleteWordById,
 } from "./word.controller";

@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import environment from "@src/base/config/env";
-import loggers from "@src/module/logs";
+import loggers from "@src/module/logger";
 import i18n from "i18next";
 import { PrismaClient, User } from "@prisma/client";
 import { RegisterDto } from "../dto/Register.dto";
@@ -12,8 +12,6 @@ import { ITokenPayload } from "../interface/payload";
 import { IApiResponse } from "@src/base/interface/ApiResponse";
 import { v4 as uuidv4 } from "uuid";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
-import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
-import { ResponseStatus } from "@src/base/config/ResponseStatus";
 import {
   ApiBadRequestError,
   ApiDuplicateError,
@@ -25,6 +23,7 @@ import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
 import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
 import { ErrorMessage, SuccessMessage } from "@src/base/message";
+import { ResponseStatus } from "@src/base/config/ResponseStatus";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();

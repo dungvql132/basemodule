@@ -50,3 +50,14 @@ export const updateWordById = asyncHandler(async function (
 
   res.status(200).json({ message: "Word updated successfully", word: word });
 });
+
+export const deleteWordById = asyncHandler(async function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = req.params;
+  const word = await wordService.deleteWordById(Number(id));
+
+  res.status(200).json({ message: "Word delete successfully", word: word });
+});
