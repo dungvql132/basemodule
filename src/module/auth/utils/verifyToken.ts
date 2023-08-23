@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { PrismaClient, Token, User } from "@prisma/client";
 import { ITokenPayload } from "../interface/payload";
 import { ApiNotFoundError } from "@src/base/interface/ApiError";
+import { ObjectMessage } from "@src/base/message";
 const prisma = new PrismaClient();
 
 export async function verifyToken(token: string | null | undefined): Promise<{
@@ -21,7 +22,7 @@ export async function verifyToken(token: string | null | undefined): Promise<{
     },
   });
 
-  if (!tokenFound) throw new ApiNotFoundError();
+  if (!tokenFound) throw new ApiNotFoundError(ObjectMessage.TOKEN);
 
   let isMatchedToken = false;
   if (tokenFound && tokenFound.secretKey === decodedToken.secretKey) {
@@ -56,7 +57,7 @@ export async function verifyTokenUser(
     },
   });
 
-  if (!user) throw new ApiNotFoundError("User");
+  if (!user) throw new ApiNotFoundError(ObjectMessage.USER);
 
   return {
     isMatchedToken,

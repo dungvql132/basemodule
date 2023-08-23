@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import environment from "@src/base/config/env";
-import loggers from "@src/module/logs";
+import loggers from "@src/module/logger";
 import i18n from "i18next";
 import { PrismaClient, User } from "@prisma/client";
 import { RegisterDto } from "../dto/Register.dto";
@@ -12,8 +12,7 @@ import { ITokenPayload } from "../interface/payload";
 import { IApiResponse } from "@src/base/interface/ApiResponse";
 import { v4 as uuidv4 } from "uuid";
 import { RenewAccessTokenDto } from "../dto/RenewAccessToken.dto";
-import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
-import { ResponseStatus } from "@src/base/config/ResponseStatus";
+
 import {
   ApiBadRequestError,
   ApiDuplicateError,
@@ -24,7 +23,8 @@ import {
 import { LogoutDto } from "../dto/Logout.dto";
 import { CheckUserLoginDto } from "../dto/CheckUserLogin.dto";
 import { verifyToken, verifyTokenUser } from "../utils/verifyToken";
-import { ErrorMessage, SuccessMessage } from "@src/base/message";
+import { ErrorMessage, ObjectMessage, SuccessMessage } from "@src/base/message";
+import { ResponseStatus } from "@src/base/config/ResponseStatus";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();
@@ -41,7 +41,7 @@ export async function register(RegisterDto: RegisterDto): Promise<User> {
   });
 
   if (checkUser) {
-    throw new ApiDuplicateError("User");
+    throw new ApiDuplicateError(ObjectMessage.USER);
   }
 
   // Hash the password and create a new user
@@ -108,19 +108,16 @@ export async function login(LoginDto: LoginDto): Promise<IApiResponse> {
       expiresIn: environment.REFRESHTOKEN_EXP,
     });
 
-    // Construct the result object
-    const result: IApiResponse = {
+    return {
       accessToken,
       refreshToken,
       message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
       responseStatus: ResponseStatus.SUCCESS,
     };
-
-    return result;
   }
 
   // Handle error if user is not found
-  throw new ApiNotFoundError("User");
+  throw new ApiNotFoundError(ObjectMessage.USER);
 }
 
 // Function to renew access token
@@ -171,15 +168,12 @@ export async function renewAccessToken(
         }
       );
 
-      // Construct the result object
-      const result: IApiResponse = {
+      return {
         accessToken,
         refreshToken,
         message: i18n.t(SuccessMessage.RENEW_ACCESS_TOKEN_SUCCESS),
         responseStatus: ResponseStatus.SUCCESS,
       };
-
-      return result;
     } else {
       // Delete old token and throw unauthorized error
       await prisma.token.delete({
@@ -191,101 +185,62 @@ export async function renewAccessToken(
       throw new ApiForbiddenError(i18n.t(ErrorMessage.USE_OLD_TOKEN));
     }
   }
-
   // Handle error if token is not found
-  throw new ApiNotFoundError("Token");
+  throw new ApiNotFoundError(ObjectMessage.TOKEN);
 }
 
 export async function checkUserLogin(
   checkUserLoginDto: CheckUserLoginDto
 ): Promise<IApiResponse> {
-  const { refreshToken, accessToken } = checkUserLoginDto;
-  const tokens = [refreshToken, accessToken];
-  let message = "";
+  const { accessToken } = checkUserLoginDto;
+  // verify token
+  const { user, token, isMatchedToken } = await verifyTokenUser(accessToken);
 
-  for (let index = 0; index < tokens.length; index++) {
-    if (!tokens[index]) continue;
+  if (!token) throw new ApiNotFoundError(ObjectMessage.TOKEN);
 
-    // verify token
-    try {
-      const verifyAccessToken = await verifyTokenUser(tokens[index]);
-      const { user, isMatchedToken } = verifyAccessToken;
+  if (!isMatchedToken)
+    throw new ApiUnauthorizedError(i18n.t(ErrorMessage.TOKEN_NOT_MATCH));
 
-      // has user and matched token
-      if (user && isMatchedToken) {
-        const result: IApiResponse = {
-          message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
-          responseStatus: ResponseStatus.SUCCESS,
-          data: user,
-        };
-        return result;
-      }
-    } catch (error) {
-      const err = error as Error;
-      message = err.message;
-      continue;
-    }
-  }
-
-  if (message !== "") throw new Error(message);
-
-  // Handle error if token is not found
-  throw new ApiNotFoundError("Token");
+  return {
+    message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
+    responseStatus: ResponseStatus.SUCCESS,
+    data: user,
+  };
 }
 
 export async function logout(logoutDto: LogoutDto): Promise<IApiResponse> {
-  const { refreshToken, accessToken } = logoutDto;
-  const tokens = [refreshToken, accessToken];
-  let message = "";
+  const { accessToken } = logoutDto;
 
-  for (let index = 0; index < tokens.length; index++) {
-    if (!tokens[index]) continue;
-    // Verify the token
-    try {
-      const verifyAccessToken = await verifyToken(tokens[index]);
-      const { token, isMatchedToken } = verifyAccessToken;
+  const { token, isMatchedToken } = await verifyToken(accessToken);
+  if (!token) throw new ApiNotFoundError(ObjectMessage.TOKEN);
 
-      // verify token
-      if (token) {
-        // if matched Token, logout from this divice
-        if (!isMatchedToken)
-          throw new ApiUnauthorizedError(i18n.t(ErrorMessage.TOKEN_NOT_MATCH));
+  // verify token
+  // if matched Token, logout from this divice
+  if (!isMatchedToken)
+    throw new ApiUnauthorizedError(i18n.t(ErrorMessage.TOKEN_NOT_MATCH));
 
-        const deletedTokens = await prisma.token.deleteMany({
-          where: {
-            id: token.id,
-          },
-        });
+  await prisma.token.deleteMany({
+    where: {
+      id: token.id,
+    },
+  });
 
-        const result: IApiResponse = {
-          message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
-          responseStatus: ResponseStatus.SUCCESS,
-        };
-        return result;
-      }
-    } catch (error) {
-      const err = error as Error;
-      message = err.message;
-      continue;
-    }
-  }
-
-  if (message !== "") throw new Error(message);
-
-  // Handle error if token is not found
-  throw new ApiNotFoundError("Token");
+  return {
+    message: i18n.t(SuccessMessage.LOGIN_SUCCESS),
+    responseStatus: ResponseStatus.SUCCESS,
+  };
 }
 
 // logout user from all devices
 export async function logoutAll(userId: number): Promise<IApiResponse> {
-  const deletedTokens = await prisma.token.deleteMany({
+  await prisma.token.deleteMany({
     where: {
       userId,
     },
   });
-  const result: IApiResponse = {
+
+  return {
     message: i18n.t(SuccessMessage.LOGOUT_ALL_DEVICES_SUCCESS),
     responseStatus: ResponseStatus.SUCCESS,
   };
-  return result;
 }
