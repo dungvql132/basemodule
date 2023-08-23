@@ -1,15 +1,17 @@
 // Import necessary modules and dependencies
 import bcrypt from "bcryptjs";
 import { PrismaClient, User } from "@prisma/client";
-import { ErrorResponseStatusCode } from "@src/base/config/ErrorResponseStatusCode";
-import { ResponseStatus } from "@src/base/config/ResponseStatus";
-import { ApiError, ApiNotFoundError } from "@src/base/interface/ApiError";
+import {
+  ApiDuplicateError,
+  ApiNotFoundError,
+} from "@src/base/interface/ApiError";
 import { UpdateUserDto } from "../dto/updateUser.dto";
 import {
   convertDeletedEmailToEmail,
   convertEmailToDeletedEmail,
 } from "../utils/formatDeletedEmail";
 import { logoutAll } from "@src/module/auth/services/auth.service";
+import { ObjectMessage } from "@src/base/message";
 
 // Create an instance of the Prisma client
 const prisma = new PrismaClient();
@@ -36,7 +38,7 @@ export async function updateUser(
   });
 
   if (!checkUser) {
-    throw new ApiNotFoundError("User");
+    throw new ApiNotFoundError(ObjectMessage.USER);
   }
 
   // Update the user's information
@@ -67,7 +69,7 @@ export async function deleteUser(userId: number): Promise<User> {
   });
 
   if (!checkUser) {
-    throw new ApiNotFoundError("User");
+    throw new ApiNotFoundError(ObjectMessage.USER);
   }
 
   // Update the user's information to mark as deleted
@@ -98,7 +100,7 @@ export async function reactiveUser(userId: number): Promise<User> {
   });
 
   if (!checkUser) {
-    throw new ApiNotFoundError("User");
+    throw new ApiNotFoundError(ObjectMessage.USER);
   }
 
   const reactiveEmail = convertDeletedEmailToEmail(checkUser.email, userId);
@@ -110,11 +112,7 @@ export async function reactiveUser(userId: number): Promise<User> {
   });
 
   if (checkEmailUser) {
-    throw new ApiError(
-      "Email has been in used",
-      ResponseStatus.DUPLICATE,
-      ErrorResponseStatusCode.DUPLICATE
-    );
+    throw new ApiDuplicateError(ObjectMessage.EMAIL);
   }
 
   // Update the user's information to mark as deleted

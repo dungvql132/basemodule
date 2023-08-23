@@ -7,4 +7,5 @@ export const ErrorMessage = {
   WRONG_PASSWORD: "Wrong password",
   USE_OLD_TOKEN: "Use old token",
   TOKEN_NOT_MATCH: "Token not match",
+  EMAIL_IN_USE: "Email is in use",
 };
