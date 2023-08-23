@@ -1,0 +1,19 @@
+export interface IResponseStatus {
+  SUCCESS: number;
+  BAD_REQUEST: number;
+  UNAUTHORIZED: number;
+  FORBIDDEN: number;
+  NOT_FOUND: number;
+  DUPLICATE: number;
+  INTERNAL_ERROR: number;
+}
+
+export const ResponseStatus: IResponseStatus = {
+  SUCCESS: 200,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  DUPLICATE: 409,
+  INTERNAL_ERROR: 500,
+};
