@@ -11,5 +11,17 @@
     "Login success":"Đăng nhập thành công",
     "Logout all devices success":"Đăng xuất khỏi tất cả các thiết bị thành công",
     "Logout success":"Đăng xuất thành công",
-    "Renew access token success":"Tạo mới Mã thông báo thành công"
+    "Renew access token success":"Tạo mới Mã thông báo thành công",
+
+    "Get data success":"Lấy dữ liệu thành công",
+    "Update success":"Cập nhật thành công",
+    "Delete success":"Xóa thành công",
+    "Create success":"Tạo thành công",
+
+    "Get data fail":"lấy dữ liệu thất bại",
+    "Update fail":"Cập nhật thất bại",
+    "Delete fail":"Xóa thất bại",
+    "Create fail":"Tạo thất bại",
+
+    "Invalid data":"Dữ liệu đầu vào không phù hợp"
 }

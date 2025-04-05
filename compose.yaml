@@ -1,31 +1,19 @@
-services:
-  app:
-    image: node:18-alpine
-    command: sh -c "npm install && npm install -g ts-node && npm run migrate:docker && npm run dev"
-    ports:
-      - 127.0.0.1:9999:9999
-    working_dir: /app
-    volumes:
-      - ./:/app
-    environment:
-      DATABASE_URL: postgresql://dung:1@postgres:5432/test?schema=public
-      PORT: 9999
-      JWTSecret: sdabdasdfhg
-      REFRESHTOKEN_EXP: 2592000
-      ACCESSTOKEN_EXP: 86400
+version: '3.8'
 
-  postgres:
-    image: postgres:latest
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql_container
+    restart: always
     environment:
-      POSTGRES_DB: test
-      POSTGRES_USER: dung
-      POSTGRES_PASSWORD: 1
+      SA_PASSWORD: "NewP@ssw0rd123"
+      ACCEPT_EULA: "Y"
+      MSSQL_TLS_DISABLED: "1"
+      TRUSTSERVERCERTIFICATE: "true"
     ports:
-      - "5432:5432"
+      - "1433:1433"
     volumes:
-      - ./data:/var/lib/postgresql/data
-    expose:
-      - 5432
+      - mssql_data:/var/opt/mssql
 
 volumes:
-  postgres-data:
+  mssql_data:

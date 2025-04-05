@@ -11,5 +11,17 @@
     "Login success":"Login success",
     "Logout all devices success":"Logout all devices success",
     "Logout success":"Logout success",
-    "Renew access token success":"Renew access token success"
+    "Renew access token success":"Renew access token success",
+
+    "Get data success":"Get data success",
+    "Update success":"Update success",
+    "Delete success":"Delete success",
+    "Create success":"Create success",
+
+    "Get data fail":"Get data fail",
+    "Update fail":"Update fail",
+    "Delete fail":"Delete fail",
+    "Create fail":"Create fail",
+
+    "Invalid data":"Invalid data"
 }

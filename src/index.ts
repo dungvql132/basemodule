@@ -3,11 +3,13 @@ import "@src/base/config/i18n";
 import bodyParser from "body-parser";
 import cors from "cors";
 import environment from "@src/base/config/env";
-import authRoute from "@src/module/auth/routes";
-import userManagerRoute from "@src/module/userManager/routes";
 import express, { type Application } from "express";
 import { handleError } from "@src/base/handleError/handleError";
 import { changeLanguageMiddleware } from "@src/middlewares/changeLanguage";
+
+import authRoute from "@src/module/auth/routes";
+import userManagerRoute from "@src/module/userManager/routes";
+import diaryRoute from "@src/module/diary/routes";
 
 const app: Application = express();
 const port = environment.PORT;
@@ -24,6 +26,7 @@ app.use(changeLanguageMiddleware);
 // authentication
 app.use(authRoute);
 app.use(userManagerRoute);
+app.use(diaryRoute);
 
 // handle error
 app.use(handleError);

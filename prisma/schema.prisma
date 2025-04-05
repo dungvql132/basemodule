@@ -6,25 +6,65 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlserver"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String
-  age      Int?
-  active   Boolean @default(true)
-  tokens   Token[]
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String
+  name        String
+  age         Int?
+  active      Boolean  @default(true)
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+
+  diaries     Diary[]
+  tokens      Token[]
 }
 
 model Token {
-  id        Int      @id @default(autoincrement())
-  secretKey String
-  userId    Int?
-  user      User?    @relation(fields: [userId], references: [id])
-  exp       DateTime
-  active    Boolean  @default(false)
+  id          Int      @id @default(autoincrement())
+  secretKey   String
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id])
+  exp         DateTime
+  active      Boolean  @default(false)
 }
+
+model Diary {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+
+  dailyDiaries DailyDiary[] @relation(onDelete: CASCADE)
+}
+
+model DailyDiary {
+  id          Int      @id @default(autoincrement())
+  diaryId     Int
+  diary       Diary    @relation(fields: [diaryId], references: [id])
+  content     String   @db.Text
+  eventDate   DateTime
+  createDate  DateTime @default(now())
+  updateDate  DateTime @updatedAt
+
+  events      Event[]  @relation(onDelete: CASCADE)
+}
+
+model Event {
+  id            Int         @id @default(autoincrement())
+  content       String      @db.Text
+  eventDate     DateTime
+  createDate    DateTime    @default(now())
+  updateDate    DateTime    @updatedAt
+
+  dailyDiaryId  Int
+  dailyDiary    DailyDiary  @relation(fields: [dailyDiaryId], references: [id])
+}
+
+
